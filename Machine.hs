@@ -17,7 +17,7 @@ state :: Head -> State
 state = either id id
 
 -- A cell either contains an integer or it wasn't visited yet.
-data Cell = Cell Int | Empty deriving (Eq, Ord, Show)
+data Cell = Cell !Int | Empty deriving (Eq, Ord, Show)
 
 zeroC :: Cell
 zeroC = Cell 0
@@ -99,7 +99,7 @@ runFor prg imax = go 1 (Tape [] (Right 1) [])
                                    Nothing -> []
                                    Just t' -> t : go (i+1) t'
 
--- Given a program and a preset tape, run the Turing machine until
+-- Given a program and a tape, run the Turing machine until
 -- it exits from one of the two sides of the tape.
 -- If the machine halts or loops in the process, we report that.
 runTillBorder :: Program -> Tape -> Result Tape
@@ -108,6 +108,9 @@ runTillBorder prg tape = go 0 tape
           symbolsNum = toInteger . length . nub . (zeroC:) . map fst $ M.keys prg
           statesNum = toInteger . length . nub . map snd $ M.keys prg
           stepsCap = 1 + (2*statesNum)*(toInteger len+1)*symbolsNum^len -- Upper bound on the number of iterations
+          atBorder (Tape [] (Left _) _) = True
+          atBorder (Tape _ (Right _) []) = True
+          atBorder _ = False
           go step t@(Tape l a r) | null l && direction a == Left () = return t
                                  | null r && direction a == Right () = return t
                                  | step > stepsCap = Loop
@@ -183,3 +186,12 @@ addSymbolLog prg = M.fromList . concatMap dup $ M.toList prg
 -- A 3x3 bouncer-counter by Justin, which defies CPS
 exampleBC :: Program
 exampleBC = parse "1RB0LC---_1RC0LC0RB_2LA1LC0RA"
+
+exampleLoop1 :: Program
+exampleLoop1 = parse "1RB0RC_0LA0LA_1LD---_1RE1LB_1LB0RD"
+
+exampleHalt1 :: Program
+exampleHalt1 = parse "1RB1LC_0LA0LD_1LA1RZ_1LB1RE_0RD0RB"
+
+exampleHalt2 :: Program
+exampleHalt2 = parse "1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA"

@@ -216,15 +216,6 @@ closedPositionSet prg sizes shift = do
 example :: Program
 example = parse "1RB0RB_1LC0RA_1LD0LB_0LE---_1RE1LB"
 
-exampleHalt1 :: Program
-exampleHalt1 = parse "1RB1LC_0LA0LD_1LA1RZ_1LB1RE_0RD0RB"
-
-exampleHalt2 :: Program
-exampleHalt2 = parse "1RB1LC_1RC1RB_1RD0LE_1LA1LD_1RZ0LA"
-
-exampleLoop1 :: Program
-exampleLoop1 = parse "1RB0RC_0LA0LA_1LD---_1RE1LB_1LB0RD"
-
 -- Given a decreasing list of integers, return its maximal by divisibility elements.
 -- removeDivisors [10,9..1] == [10,9,8,7,6]
 removeDivisors :: [Int] -> [Int]
